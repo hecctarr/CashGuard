@@ -28,6 +28,8 @@
 | Replit proof of use | [`submission/SDC2026_Extragorjoss_Replit_POU.pdf`](submission/SDC2026_Extragorjoss_Replit_POU.pdf) |
 | RunPod proof of use | N/A: RunPod is not used in Phase 1 (planned for invoice reading in the next round) |
 | Pitch deck | [`submission/SDC2026_Extragorjoss_PitchDeck.pdf`](submission/SDC2026_Extragorjoss_PitchDeck.pdf) |
+| Live Demo | [`https://cash-guard.replit.app/) |
+| Demo Video | [`https://youtu.be/yx28UzUcPcE?si=0X9VObqphDO9KcjE) |
 
 ---
 
