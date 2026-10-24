@@ -25,8 +25,9 @@
 |---|---|
 | Preliminary proposal | [`submission/SDC2026_Extragorjoss_Preliminary.pdf`](submission/SDC2026_Extragorjoss_Preliminary.pdf) |
 | Technology declaration | [`submission/SDC2026_Extragorjoss_TechDeclaration.pdf`](submission/SDC2026_Extragorjoss_TechDeclaration.pdf) |
-| Replit proof of use | `submission/SDC2026_Extragorjoss_Replit_POU.pdf` |
-| RunPod proof of use | `submission/SDC2026_Extragorjoss_Runpod_POU.pdf` |
+| Replit proof of use | [`submission/SDC2026_Extragorjoss_Replit_POU.pdf`](submission/SDC2026_Extragorjoss_Replit_POU.pdf) |
+| RunPod proof of use | N/A: RunPod is not used in Phase 1 (planned for invoice reading in the next round) |
+| Pitch deck | [`submission/SDC2026_Extragorjoss_PitchDeck.pdf`](submission/SDC2026_Extragorjoss_PitchDeck.pdf) |
 
 ---
 
@@ -51,7 +52,7 @@ Paying the wrong bill on the wrong day can leave no cash for wages.
 ## The Solution
 
 1. A supplier sends an invoice photo on **WhatsApp**, or staff upload it.
-2. **Document AI** (GLM-OCR on RunPod) reads the supplier, amount, due date and line items. Staff check them and confirm.
+2. CashGuard reads the supplier, amount, due date and line items, and staff check them and confirm. In Phase 1 the demo invoices use pre-read fields; an AI vision model (GLM-OCR on a RunPod GPU endpoint) is built in and planned for the next round.
 3. The **actuarial risk engine** predicts when customers will really pay (Kaplan-Meier survival analysis + Bühlmann credibility). It then runs **1,000 Monte Carlo cash futures**.
 4. The owner sees the **risk %** of paying today, the **safest date that is still on time**, and a plain-language reason.
 5. The **owner decides**. Every decision goes into an insert-only audit log. AI never approves or pays anything.
@@ -138,7 +139,7 @@ gets a `wa.me` link and a QR code (it opens WhatsApp with "INVOICE" already type
 ![Architecture](docs/architecture.png)
 
 ```
-WhatsApp / upload ──► Replit (Streamlit app + webhook) ──► RunPod endpoint (GLM-OCR, GPU)
+WhatsApp / upload ──► Replit (Streamlit app + webhook) ──► [planned] RunPod endpoint (GLM-OCR, GPU)
                                    │                                    │
                                    │◄──────── invoice fields (JSON) ────┘
                                    ▼
@@ -149,10 +150,10 @@ WhatsApp / upload ──► Replit (Streamlit app + webhook) ──► RunPod en
 |---|---|
 | Front end | Streamlit (Python), Plotly |
 | Input channel | WhatsApp via Twilio API (or Meta WhatsApp Cloud API), Flask webhook |
-| AI model | GLM-OCR (MIT licence) on a RunPod Serverless vLLM endpoint (OpenAI-compatible API) |
+| AI model | Planned: GLM-OCR (MIT licence) on a RunPod Serverless vLLM endpoint. Phase 1 uses pre-read demo fields or manual entry |
 | Risk engine | NumPy, pandas: Kaplan-Meier, Bühlmann credibility, Monte Carlo |
 | Database | CSV/JSON for the demo; Supabase PostgreSQL with Row Level Security for production |
-| Hosting | Replit (app + webhook), RunPod (GPU model) |
+| Hosting | Replit (app + webhook). RunPod (GPU model) planned |
 
 ---
 
@@ -161,10 +162,9 @@ WhatsApp / upload ──► Replit (Streamlit app + webhook) ──► RunPod en
 ### Option 1 — Run on Replit (Recommended)
 
 1. Import this repository via **Create Repl → Import from GitHub**.
-2. Open the **Secrets** tab (🔒) and add the variables listed in `.env.example`:
-   - `RUNPOD_API_KEY`
-   - `RUNPOD_ENDPOINT_ID`
-   - optional: `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, `TWILIO_WHATSAPP_FROM`, `PUBLIC_URL`, `WHATSAPP_WEBHOOK=1`
+2. Optional: open the **Secrets** tab (🔒) and add the variables listed in `.env.example`
+   (`RUNPOD_API_KEY`, `RUNPOD_ENDPOINT_ID` for the planned AI invoice reader; `TWILIO_*`, `PUBLIC_URL`,
+   `WHATSAPP_WEBHOOK=1` for live WhatsApp). None are needed for the demo.
 3. Click **Run**. Replit uses the `.replit` file to start `python src/main.py`, which opens the web app.
 
 The app works **without any keys**. Demo invoices use pre-extracted fields, and the Upload bill page has a
@@ -191,7 +191,7 @@ cp .env.example .env            # then fill in your values
 python src/main.py              # opens http://localhost:8501
 ```
 
-### Setting up the RunPod model
+### Optional: setting up the RunPod model (planned for the next round)
 
 1. In RunPod, go to **Serverless → New Endpoint** and use the ready-made **vLLM** worker with the model `zai-org/GLM-OCR`.
 2. Copy the endpoint ID and your RunPod API key into `RUNPOD_ENDPOINT_ID` and `RUNPOD_API_KEY`.
