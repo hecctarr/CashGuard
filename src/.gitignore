@@ -1,0 +1,10 @@
+# secrets
+.env
+# generated demo data (recreated on first run)
+src/data/
+# python
+__pycache__/
+*.pyc
+.pytest_cache/
+venv/
+.venv/

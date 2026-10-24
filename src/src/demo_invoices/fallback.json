@@ -1,0 +1,62 @@
+{
+  "kopi_bean_SB-552.png": {
+    "fields": {
+      "supplier": "Kopi Bean Trading (demo)",
+      "invoice_no": "SB-552",
+      "amount": 1800.0,
+      "issue_date": "2026-10-27",
+      "due_date": "2026-11-04",
+      "line_items": [
+        {
+          "description": "Arabica beans 1kg",
+          "qty": 40,
+          "unit_price": 32.0,
+          "total": 1280.0
+        },
+        {
+          "description": "House blend 1kg",
+          "qty": 20,
+          "unit_price": 26.0,
+          "total": 520.0
+        }
+      ]
+    },
+    "confidence": {
+      "supplier": "high",
+      "invoice_no": "high",
+      "amount": "high",
+      "issue_date": "high",
+      "due_date": "low"
+    }
+  },
+  "fresh_dairy_SB-560.png": {
+    "fields": {
+      "supplier": "Fresh Dairy Supply (demo)",
+      "invoice_no": "SB-560",
+      "amount": 650.0,
+      "issue_date": "2026-10-27",
+      "due_date": "2026-11-12",
+      "line_items": [
+        {
+          "description": "Fresh milk 1L",
+          "qty": 150,
+          "unit_price": 4.2,
+          "total": 630.0
+        },
+        {
+          "description": "Whipping cream 1L",
+          "qty": 10,
+          "unit_price": 2.0,
+          "total": 20.0
+        }
+      ]
+    },
+    "confidence": {
+      "supplier": "high",
+      "invoice_no": "high",
+      "amount": "high",
+      "issue_date": "high",
+      "due_date": "high"
+    }
+  }
+}
