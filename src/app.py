@@ -186,7 +186,8 @@ div[data-testid="stVerticalBlockBorderWrapper"], [data-testid="stExpander"] deta
 .cg-brandline { display:flex; align-items:center; gap:18px; }
 .cg-brandline .tile { width:64px; height:64px; border-radius:16px; box-shadow:0 10px 24px rgba(21,40,70,.18); }
 .cg-brandline .wm { height:21px; width:auto; }
-.cg-hl { font-family:'Outfit','Inter',sans-serif; font-size:clamp(2.3rem,4.6vw,3.6rem); line-height:1.05; letter-spacing:-.025em;
+.cg-hl > div { white-space:nowrap; }
+.cg-hl { font-family:'Outfit','Inter',sans-serif; font-size:clamp(2rem,3.6vw,3.4rem); line-height:1.05; letter-spacing:-.025em;
          font-weight:700; color:#1F2329; display:flex; flex-direction:column; align-items:flex-start; gap:4px; margin:0; isolation:isolate; }
 .cg-hl .w { position:relative; color:#fff; font-weight:600; padding:2px 6px; margin-left:-6px; z-index:0; }
 .cg-hl .w::before { content:""; position:absolute; inset:-35% -18%; z-index:-1; border-radius:50%; filter:blur(18px);
@@ -620,7 +621,7 @@ S0 = ds.load_settings()
 if not S0.get("setup_done") or not S0.get("business_name"):
     # FIRST RUN: the owner sets up the business before anyone signs in
     gate_theme()
-    left, mid = st.columns([1, 1.05], gap="large")
+    left, mid = st.columns([0.95, 1.15], gap="large")
     left.markdown(brand_intro("First run · fictional demo data"), unsafe_allow_html=True)
     with mid, st.container(key="cg_login"):
         st.markdown("### Set up your business")
@@ -628,17 +629,19 @@ if not S0.get("setup_done") or not S0.get("business_name"):
         with st.form("setup"):
             name = st.text_input("Business name *", placeholder="e.g. Kedai Kopi Aminah")
             addr = st.text_input("Business address (shown on invoices)", placeholder="Street, postcode, city")
-            c1, c2 = st.columns(2)
-            biz_wa = c1.text_input("Business WhatsApp number (for the invoice bot)", placeholder="+60 1x-xxx xxxx",
-                                   help="Optional. Suppliers message this number. Leave blank to use the demo simulator.")
-            own_wa = c2.text_input("Owner's WhatsApp (weekly summary)", placeholder="+60 1x-xxx xxxx",
-                                   help="Optional.")
-            c3, c4, c5 = st.columns(3)
-            cash = c3.number_input("Cash in bank today (RM)", 0, 10_000_000, int(S0.get("cash_today", 5500)), 100)
-            reserve = c4.number_input("Safety cushion: minimum cash to keep (RM)", 0, 10_000_000, int(S0.get("min_reserve", 2000)), 100,
-                                      help="The safety buffer you never want to go below.")
-            terms = c5.number_input("Usual supplier payment terms (days)", 1, 120,
-                                    int(S0.get("default_payment_terms", 30)), 1)
+            c1, c2 = st.columns(2, vertical_alignment="bottom")
+            biz_wa = c1.text_input("Business WhatsApp", placeholder="+60 1x-xxx xxxx",
+                                   help="Optional. The number suppliers send invoices to (the invoice bot). "
+                                        "Leave blank to use the demo simulator.")
+            own_wa = c2.text_input("Owner's WhatsApp", placeholder="+60 1x-xxx xxxx",
+                                   help="Optional. Gets the weekly cash summary.")
+            c3, c4, c5 = st.columns(3, vertical_alignment="bottom")
+            cash = c3.number_input("Cash today (RM)", 0, 10_000_000, int(S0.get("cash_today", 5500)), 100,
+                                   help="How much is in the business bank account today.")
+            reserve = c4.number_input("Safety cushion", 0, 10_000_000, int(S0.get("min_reserve", 2000)), 100,
+                                      help="In RM. The minimum cash you always want to keep. Going below it counts as running short.")
+            terms = c5.number_input("Terms (days)", 1, 120, int(S0.get("default_payment_terms", 30)), 1,
+                                    help="Supplier payment terms: how many days suppliers usually give you to pay.")
             st.caption("To let you explore straight away, CashGuard starts with sample bills, customers and sales "
                        "(fictional). Real use would connect your own data.")
             go = st.form_submit_button("Save and continue", type="primary", use_container_width=True)
