@@ -20,7 +20,8 @@ from policy import DEFAULT_CATEGORIES
 TODAY = pd.Timestamp("2026-10-28")
 
 SETTINGS = {
-    "business_name": "Demo Café",
+    "business_name": "",                # set by the owner on the first-run setup screen
+    "setup_done": False,
     "today": str(TODAY.date()),      # fixed demo date so results are repeatable
     "cash_today": 5500,
     "min_reserve": 2000,
@@ -31,21 +32,21 @@ SETTINGS = {
     "categories": DEFAULT_CATEGORIES,   # spending categories + staff limits (Owner can edit)
     "manager_approval_limit": 300,      # Manager may decide items up to this amount; above -> Owner
     "manager_monthly_limit": 1500,      # Manager may approve this much in total per month; above -> Owner
-    "business_address": "12 Jalan Contoh, 47400 Petaling Jaya (demo)",
+    "business_address": "",
     "default_payment_terms": 30,        # days; used when a WhatsApp invoice form has no due date
     "supplier_profiles": {              # saved from earlier WhatsApp invoice forms (fictional)
-        "+60120000101": {"supplier": "Kopi Bean Trading (demo)", "bank": "Maybank",
+        "+600000000101": {"supplier": "Kopi Bean Trading (demo)", "bank": "Maybank",
                          "account_name": "Kopi Bean Trading Sdn Bhd", "account_no": "5140-0000-1234",
                          "terms_days": 14},
     },
-    "owner_whatsapp": "+60120000000",   # fictional number for the weekly summary
-    "business_whatsapp": "+60120000999",  # fictional business number suppliers message (the bot)
+    "owner_whatsapp": "",               # owner adds their own number in Settings
+    "business_whatsapp": "",            # the business WhatsApp number the bot uses (set by owner)
     "notify_suppliers": True,           # bot tells suppliers: received, approved + pay date, paid
     "twilio_sandbox_code": "",          # e.g. "join happy-tiger" while testing with the Twilio sandbox
-    "whatsapp_senders": [               # registered (trusted) senders - fictional numbers
-        {"number": "+60120000101", "name": "Kopi Bean Trading (demo)", "type": "Supplier"},
-        {"number": "+60120000102", "name": "Fresh Dairy Supply (demo)", "type": "Supplier"},
-        {"number": "+60120000201", "name": "Staff Member", "type": "Staff"},
+    "whatsapp_senders": [               # registered senders - FAKE numbers (+60 0... is never a real Malaysian number)
+        {"number": "+600000000101", "name": "Kopi Bean Trading (demo)", "type": "Supplier"},
+        {"number": "+600000000102", "name": "Fresh Dairy Supply (demo)", "type": "Supplier"},
+        {"number": "+600000000201", "name": "Staff Member", "type": "Staff"},
     ],
 }
 

@@ -186,6 +186,13 @@ python src/main.py              # opens http://localhost:8501
 
 `runpod/handler.py` is an optional custom worker if you build your own worker image instead.
 
+### First run: set up your business
+
+The first screen asks the owner for the **business name**, address, an optional business WhatsApp number,
+cash today, a minimum reserve and usual payment terms. All of these can be changed later in **Settings**.
+The bills, customers and sales after that are fictional sample data, so you can explore straight away.
+Demo phone numbers start with `+60 0...`, which is never a real Malaysian number.
+
 ### Demo logins (simulated, no passwords)
 
 | Role | Can do |

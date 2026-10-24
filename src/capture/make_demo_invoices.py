@@ -44,7 +44,7 @@ def font(size, bold=False):
     return ImageFont.load_default()
 
 
-def draw(inv):
+def draw(inv, bill_to="Your business"):
     img = Image.new("RGB", (800, 1000), "white")
     d = ImageDraw.Draw(img)
     d.text((50, 50), inv["supplier"], font=font(30, True), fill="black")
@@ -53,7 +53,7 @@ def draw(inv):
     d.text((560, 50), "INVOICE", font=font(34, True), fill="#333")
     y = 190
     for k, v in (("Invoice no.", inv["invoice_no"]), ("Invoice date", inv["issue_date"]),
-                 ("Due date", inv["due_date"]), ("Bill to", "Demo Café")):
+                 ("Due date", inv["due_date"]), ("Bill to", bill_to)):
         d.text((50, y), k, font=font(18), fill="#555")
         d.text((250, y), v, font=font(18, True), fill="black")
         y += 36
@@ -80,11 +80,18 @@ def draw(inv):
     return img, total
 
 
-def main():
+def main(bill_to: str = None):
+    """Draw the demo invoices addressed to the business set up in CashGuard."""
+    if not bill_to:
+        try:
+            import data_store as ds
+            bill_to = ds.load_settings().get("business_name") or "Your business"
+        except Exception:
+            bill_to = "Your business"
     os.makedirs(OUT, exist_ok=True)
     fallback = {}
     for inv in INVOICES:
-        img, total = draw(inv)
+        img, total = draw(inv, bill_to)
         img.save(os.path.join(OUT, inv["file"]))
         fields = {"supplier": inv["supplier"], "invoice_no": inv["invoice_no"],
                   "amount": round(total, 2), "issue_date": inv["issue_date"],

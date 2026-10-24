@@ -73,5 +73,5 @@ def notify_supplier(event: str, bill: dict, settings: dict):
     number = supplier_phone(bill["bill_no"], bill["supplier"], settings)
     if not number:
         return None
-    text = message(event, bill, settings.get("business_name", "We"))
+    text = message(event, bill, settings.get("business_name") or "We")
     return number, text, send_whatsapp(number, text)

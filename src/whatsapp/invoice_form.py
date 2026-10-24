@@ -64,7 +64,7 @@ def looks_like_form(text: str) -> bool:
 
 def template_for(settings: dict, sender: str) -> str:
     p = profile(settings, sender)
-    return TEMPLATE.format(business=settings.get("business_name", "Our business"), name=p.get("supplier", ""),
+    return TEMPLATE.format(business=settings.get("business_name") or "Our business", name=p.get("supplier", ""),
                            bank=p.get("bank", ""), account_name=p.get("account_name", ""),
                            account_no=p.get("account_no", ""))
 

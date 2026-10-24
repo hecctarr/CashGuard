@@ -321,6 +321,47 @@ def evaluate_item(d, item, **what_if):
 # ---------------------------------------------------------------------------
 # LOGIN (simulated - no passwords)
 # ---------------------------------------------------------------------------
+S0 = ds.load_settings()
+if not S0.get("setup_done") or not S0.get("business_name"):
+    # FIRST RUN: the owner sets up the business before anyone signs in
+    _, mid, _ = st.columns([1, 4, 1])
+    with mid:
+        lc, tc = st.columns([1, 6], vertical_alignment="center")
+        lc.image(LOGO, width=72)
+        tc.markdown('<div class="cg-brand"><div><b>Set up your business</b>'
+                    '<span>One minute. You can change all of this later in Settings.</span></div></div>',
+                    unsafe_allow_html=True)
+        with st.form("setup"):
+            name = st.text_input("Business name *", placeholder="e.g. Kedai Kopi Aminah")
+            addr = st.text_input("Business address (shown on invoices)", placeholder="Street, postcode, city")
+            c1, c2 = st.columns(2)
+            biz_wa = c1.text_input("Business WhatsApp number (for the invoice bot)", placeholder="+60 1x-xxx xxxx",
+                                   help="Optional. Suppliers message this number. Leave blank to use the demo simulator.")
+            own_wa = c2.text_input("Owner's WhatsApp (weekly summary)", placeholder="+60 1x-xxx xxxx",
+                                   help="Optional.")
+            c3, c4, c5 = st.columns(3)
+            cash = c3.number_input("Cash in bank today (RM)", 0, 10_000_000, int(S0.get("cash_today", 5500)), 100)
+            reserve = c4.number_input("Minimum cash reserve (RM)", 0, 10_000_000, int(S0.get("min_reserve", 2000)), 100,
+                                      help="The safety buffer you never want to go below.")
+            terms = c5.number_input("Usual supplier payment terms (days)", 1, 120,
+                                    int(S0.get("default_payment_terms", 30)), 1)
+            st.caption("To let you explore straight away, CashGuard starts with sample bills, customers and sales "
+                       "(fictional). Real use would connect your own data.")
+            go = st.form_submit_button("Save and continue", type="primary", use_container_width=True)
+        if go:
+            if not name.strip():
+                st.error("Please enter your business name.")
+            else:
+                S0.update({"business_name": name.strip(), "business_address": addr.strip(),
+                           "business_whatsapp": biz_wa.strip(), "owner_whatsapp": own_wa.strip(),
+                           "cash_today": cash, "min_reserve": reserve, "default_payment_terms": int(terms),
+                           "setup_done": True})
+                ds.save_settings(S0)
+                make_demo_invoices(name.strip())          # demo invoices addressed to this business
+                audit.log("Owner", "Business set up", f"{name.strip()}; cash {money(cash)}, reserve {money(reserve)}")
+                st.rerun()
+    st.stop()
+
 if st.session_state.user is None:
     _, mid, _ = st.columns([1, 6, 1])
     with mid:
@@ -749,6 +790,9 @@ elif page == "Audit log":
 
 elif page == "Settings":
     with st.form("settings"):
+        b1, b2 = st.columns(2)
+        bname = b1.text_input("Business name", S.get("business_name", ""))
+        baddr = b2.text_input("Business address (shown on invoices)", S.get("business_address", ""))
         reserve = st.number_input("Minimum cash reserve (RM)", 0, 100000, int(S["min_reserve"]), 100)
         low = st.slider("Low risk below", 1, 20, int(S["low_risk_limit"] * 100), format="%d%%")
         high = st.slider("High risk above", 5, 60, int(S["high_risk_limit"] * 100), format="%d%%")
@@ -771,7 +815,8 @@ elif page == "Settings":
             S.update({"min_reserve": reserve, "low_risk_limit": low / 100,
                       "high_risk_limit": high / 100, "simulations": runs, "cash_today": cash,
                       "manager_approval_limit": mlimit, "manager_monthly_limit": mmonth,
-                      "owner_whatsapp": owner_wa, "business_whatsapp": biz_wa, "notify_suppliers": notify_on})
+                      "owner_whatsapp": owner_wa, "business_whatsapp": biz_wa, "notify_suppliers": notify_on,
+                      "business_name": bname.strip() or S.get("business_name", ""), "business_address": baddr.strip()})
             ds.save_settings(S)
             record("Changed settings", f"reserve {money(reserve)}, low <{low}%, high >{high}%, "
                                        f"{runs} futures, cash {money(cash)}, manager limits {money(mlimit)} per item / "
@@ -871,7 +916,10 @@ elif page == "Settings":
     st.divider()
     st.markdown("**Reset demo data** (restores the original synthetic data and clears logs)")
     if st.checkbox("I understand this resets everything") and st.button("Reset demo data"):
+        keep = {k: S.get(k) for k in ("business_name", "business_address", "business_whatsapp",
+                                       "owner_whatsapp", "setup_done", "twilio_sandbox_code")}
         generate(force=True)
+        ds.save_settings({**ds.load_settings(), **keep})      # keep the business set-up
         make_demo_invoices()
         st.session_state.risk_sent = set()
         st.success("Demo data reset.")

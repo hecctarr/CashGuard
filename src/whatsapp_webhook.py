@@ -55,7 +55,7 @@ def _store_and_read(file_bytes, content_type, sender, body, channel):
     meta = inbox.save_incoming(file_bytes, content_type, sender, settings, body=body, channel=channel)
     if meta.get("duplicate_of"):
         inbox.update(meta["id"], status="Duplicate")
-        return (f"Thank you - {settings['business_name']} already has this invoice. "
+        return (f"Thank you - {settings.get('business_name') or 'we'} already has this invoice. "
                 "No need to send it again.")
     ex = extract(meta["original_name"], file_bytes)
     if ex.get("is_invoice") is False:                       # bot: ignore non-invoice photos
@@ -64,7 +64,7 @@ def _store_and_read(file_bytes, content_type, sender, body, channel):
                 "supplier invoice.")
     inbox.update(meta["id"], extraction=ex)
     note = "" if meta["known"] else " (Note: this number is not registered with us yet.)"
-    return inbox.receipt_text(ex["fields"], settings["business_name"]) + note
+    return inbox.receipt_text(ex["fields"], settings.get("business_name") or "Our business") + note
 
 
 def handle_text(sender: str, body: str, channel: str):

@@ -20,6 +20,7 @@ from utils import pct                                        # noqa: E402
 
 def demo():
     make_data.generate(force=True)
+    ds.save_settings({**ds.load_settings(), "business_name": "Test Café", "setup_done": True})
     s = ds.load_settings()
     inv = ds.load_invoices()
     model = train(inv, pd.Timestamp(s["today"]))
@@ -105,7 +106,7 @@ Notes (optional): Delivered 27 Oct"""
 
 def test_invoice_form_defaults_and_pdf():
     s, *_ = demo()
-    res = form.process_form(FILLED, "+60120000102", s, pd.Timestamp(s["today"]), 1)
+    res = form.process_form(FILLED, "+600000000102", s, pd.Timestamp(s["today"]), 1)
     assert res["ok"], res["reply"]
     inv = res["invoice"]
     assert inv["amount"] == 650.0                              # 150 x 4.20 + 10 x 2.00
@@ -118,11 +119,11 @@ def test_invoice_form_defaults_and_pdf():
 def test_invoice_form_uses_saved_profile_and_flags_new_bank():
     s, *_ = demo()
     text = "Supplier name:\nItem 1: Arabica beans 1kg, 40, 32\nBank name:\nAccount name:\nAccount no:"
-    res = form.process_form(text, "+60120000101", s, pd.Timestamp(s["today"]), 2)
+    res = form.process_form(text, "+600000000101", s, pd.Timestamp(s["today"]), 2)
     assert res["ok"] and res["invoice"]["account_no"] == "5140-0000-1234"   # filled from saved profile
     assert res["invoice"]["due_date"] == "2026-11-11"                       # supplier's 14-day terms
     changed = text.replace("Account no:", "Account no: 9999-1111-2222")
-    res2 = form.process_form(changed, "+60120000101", s, pd.Timestamp(s["today"]), 3)
+    res2 = form.process_form(changed, "+600000000101", s, pd.Timestamp(s["today"]), 3)
     assert res2["invoice"]["bank_changed"]                                  # possible fraud -> flagged
 
 
@@ -143,9 +144,9 @@ def test_supplier_updates_and_share_link():
             "due_date": pd.Timestamp("2026-11-05"), "pay_date": pd.Timestamp("2026-11-04")}
     assert "04 Nov 2026" in notify.message("scheduled", bill, s["business_name"])
     assert "transferred RM1,800.00" in notify.message("paid", bill, s["business_name"])
-    assert notify.supplier_phone("SB-552", "Kopi Bean Trading (demo)", s) == "+60120000101"
-    assert notify.share_link("+60 12-000 0999") == "https://wa.me/60120000999?text=INVOICE"
-    assert notify.qr_png("https://wa.me/60120000999?text=INVOICE")[:4] == b"\x89PNG"
+    assert notify.supplier_phone("SB-552", "Kopi Bean Trading (demo)", s) == "+600000000101"
+    assert notify.share_link("+60 0-000 0999") == "https://wa.me/6000000999?text=INVOICE"
+    assert notify.qr_png("https://wa.me/600000999?text=INVOICE")[:4] == b"\x89PNG"
     number, text, status = notify.notify_supplier("paid", bill, s)
-    assert number == "+60120000101" and "demo" in status          # no keys -> logged, not sent
+    assert number == "+600000000101" and "demo" in status          # no keys -> logged, not sent
     assert notify.notify_supplier("paid", bill, {**s, "notify_suppliers": False}) is None
