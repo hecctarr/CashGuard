@@ -1,18 +1,10 @@
-"""Helper functions used across the project."""
+"""Small shared helpers (re-exported so tests and scripts have one import point)."""
+
+from engine.explain import money, risk_level          # noqa: F401
+from capture.extract import checks, line_items_check  # noqa: F401
+from engine.payments import credibility_k             # noqa: F401
 
 
-def format_greeting(name: str) -> str:
-    """Return a welcome message for the given project name."""
-    return f"Welcome to {name}!"
-
-
-def summarize(values: list[float]) -> dict:
-    """Return basic statistics for a list of numbers."""
-    if not values:
-        return {"count": 0, "min": None, "max": None, "average": None}
-    return {
-        "count": len(values),
-        "min": min(values),
-        "max": max(values),
-        "average": round(sum(values) / len(values), 2),
-    }
+def pct(x: float, digits: int = 1) -> str:
+    """0.237 -> '23.7%'."""
+    return f"{x * 100:.{digits}f}%"

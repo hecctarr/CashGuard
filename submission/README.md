@@ -1,0 +1,1 @@
+Put the final PDFs here: SDC2026_Extragorjoss_Preliminary.pdf, SDC2026_Extragorjoss_TechDeclaration.pdf, SDC2026_Extragorjoss_Replit_POU.pdf, SDC2026_Extragorjoss_Runpod_POU.pdf
