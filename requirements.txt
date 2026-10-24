@@ -1,2 +1,10 @@
-# Add your project dependencies here, one per line.
-runpod
+streamlit>=1.40
+pandas>=2.0
+numpy>=1.26
+plotly>=5.20
+pillow>=10.0
+requests>=2.31
+flask>=3.0
+pytest>=8.0
+reportlab>=4.0
+segno>=1.5

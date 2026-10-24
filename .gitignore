@@ -1,13 +1,10 @@
-# Python
+# secrets
+.env
+# generated demo data (recreated on first run)
+src/data/
+# python
 __pycache__/
-*.py[cod]
+*.pyc
+.pytest_cache/
 venv/
 .venv/
-
-# Environment
-.env
-
-# OS / Editor
-.DS_Store
-.vscode/
-.idea/
