@@ -1,10 +1,10 @@
-<p align="center"><img src="src/assets/logo_navy.png" alt="CashGuard logo" width="110"></p>
+![CashGuard: Know it's safe before you pay](docs/banner.jpg)
 
 # CashGuard Risk
 
 > An actuarial cash-safety check that tells micro and small business owners the safest day to pay a bill, before cash runs short.
 
-![Review & decide screen](docs/screenshots/07_review_bill.png)
+![CashGuard dashboard](docs/screenshots/04_owner_dashboard.png)
 
 ---
 
@@ -29,6 +29,16 @@
 | RunPod proof of use | `submission/SDC2026_Extragorjoss_Runpod_POU.pdf` |
 
 ---
+
+## Screenshots
+
+| | |
+|---|---|
+| ![Sign in](docs/screenshots/02_sign_in.png) **Sign in** (username + password, role-locked pages) | ![Review & decide](docs/screenshots/06_review_and_decide.png) **Review & decide** (risk today vs. safest date) |
+| ![What-if](docs/screenshots/09_what_if_surprise_repair.png) **What-if simulator** (Bad month, Surprise repair) | ![WhatsApp invoice form](docs/screenshots/11_whatsapp_invoice_form.png) **WhatsApp invoice form** (bot creates the invoice PDF) |
+| ![Does it work](docs/screenshots/12_does_it_work.png) **Does it work? (Test)** (shortfalls 14.4% → 3.3%) | ![Help](docs/screenshots/05_help_panel.png) **Help on every page** (plain-language maths) |
+
+All 22 screens (every page, all three roles) are in [`docs/screenshots/`](docs/screenshots/).
 
 ## The Problem
 
@@ -87,6 +97,7 @@ gets a `wa.me` link and a QR code (it opens WhatsApp with "INVOICE" already type
 ```
 .
 ├── docs/
+│   ├── banner.jpg                # Project banner
 │   ├── architecture.png          # System block diagram
 │   └── screenshots/              # App screenshots
 ├── runpod/
@@ -95,6 +106,8 @@ gets a `wa.me` link and a QR code (it opens WhatsApp with "INVOICE" already type
 ├── src/
 │   ├── main.py                   # Application entry point (starts the Streamlit app)
 │   ├── app.py                    # Web app: screens, roles, decisions
+│   ├── auth.py                   # Sign-in (salted hashes) + which role can open which page
+│   ├── help_text.py              # Plain-language help shown on every page
 │   ├── utils.py                  # Helper functions
 │   ├── engine/                   # Actuarial risk engine
 │   │   ├── payments.py           #   Kaplan-Meier, credibility, backtest, calibration
@@ -193,13 +206,20 @@ cash today, a minimum reserve and usual payment terms. All of these can be chang
 The bills, customers and sales after that are fictional sample data, so you can explore straight away.
 Demo phone numbers start with `+60 0...`, which is never a real Malaysian number.
 
-### Demo logins (simulated, no passwords)
+### Sign in
 
-| Role | Can do |
-|---|---|
-| **Owner** | Dashboard, review & decide everything, settings, audit log, impact test |
-| **Manager** | Decide items within the limits the Owner sets (default RM300 per item, RM1,500 per month), never their own submissions |
-| **Employee** | Upload bills, WhatsApp inbox, submit expense requests (within category limits) |
+Each person signs in with a username and password. Passwords are never stored, only a salted
+PBKDF2-SHA256 hash. Every page checks the role on every run, so Staff and Managers can never open Owner pages.
+The Owner adds people, resets passwords and removes accounts in **Settings → Team & sign-in**.
+
+| Role | Demo username / password | Can open |
+|---|---|---|
+| **Owner** | `owner` / `owner123` | Dashboard, Review & decide, Invoices, What-if simulator, Upload bill, Does it work? (Test), Audit log, Settings |
+| **Manager** | `manager` / `manager123` | Review & decide (within the limits the Owner sets: default RM300 per item, RM1,500 per month), Upload bill, New expense request, My submissions |
+| **Employee** | `staff` / `staff123` | Upload bill, New expense request, My submissions |
+
+Every page has a **Help** button that explains the page and the maths behind it in plain words.
+A chat assistant ("Ask CashGuard") is planned for the next round.
 
 ## Run Tests
 
@@ -207,7 +227,7 @@ Demo phone numbers start with `+60 0...`, which is never a real Malaysian number
 pytest -q
 ```
 
-The 12 tests cover supplier WhatsApp updates and the share link, the WhatsApp invoice form (defaults, saved details, bank-change flag, PDF), the Kaplan-Meier survival maths (checked by hand), the credibility weights, the line-item
+The 15 tests cover sign-in (hashed passwords, wrong passwords, role-locked pages), supplier WhatsApp updates and the share link, the WhatsApp invoice form (defaults, saved details, bank-change flag, PDF), the Kaplan-Meier survival maths (checked by hand), the credibility weights, the line-item
 maths check, duplicate blocking, repeatable simulations, the "never later than the due date" rule, and staff
 spending limits.
 

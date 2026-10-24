@@ -6,7 +6,7 @@ import os
 import pandas as pd
 
 BASE = os.path.dirname(os.path.abspath(__file__))
-DATA_DIR = os.path.join(BASE, "data")
+DATA_DIR = os.environ.get("CASHGUARD_DATA_DIR") or os.path.join(BASE, "data")   # tests use a temp folder
 
 BILL_COLS = ["bill_no", "supplier", "amount", "issue_date", "due_date", "status",
              "pay_date", "category", "source", "captured_by", "repeat", "approved_by"]

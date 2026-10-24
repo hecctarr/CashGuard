@@ -49,16 +49,16 @@ def explain(state: CashState, option: dict, amount: float, what: str) -> str:
     res = option["result"]
     if res["risk"] == 0 or res["fail_day_mode"] is None:
         return (f"In all {res['runs']:,} simulated futures, cash stays above your "
-                f"{money(state.reserve)} reserve if you {what} on "
-                f"{option['date']:%d %b}. Lowest typical cash: {money(res['typical_low'])}.")
+                f"{money(state.reserve)} safety cushion if you {what} on "
+                f"{option['date']:%a %-d %b}. Lowest typical cash: {money(res['typical_low'])}.")
     fail_day = res["fail_day_mode"]
     when = state.day_to_date(fail_day)
     near = [state.bill_labels[d] for d in range(fail_day, max(-1, fail_day - 4), -1)
             if d in state.bill_labels]
     bill_txt = f", when {', '.join(near[0])} is due" if near else ""
-    text = (f"If you {what} on {option['date']:%d %b}, cash falls below your "
-            f"{money(state.reserve)} reserve in {res['risk']:.0%} of {res['runs']:,} simulated "
-            f"futures, most often around {when:%d %b}{bill_txt}.")
+    text = (f"If you {what} on {option['date']:%a %-d %b}, cash falls below your "
+            f"{money(state.reserve)} safety cushion in {res['risk']:.0%} of {res['runs']:,} simulated "
+            f"futures, most often around {when:%a %-d %b}{bill_txt}.")
     top = main_cause(state, res)
     if top:
         r, share = top

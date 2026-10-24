@@ -26,9 +26,9 @@ def main() -> None:
         "--server.headless", "true",
         "--theme.base", "light",
         "--theme.primaryColor", "#152846",
-        "--theme.backgroundColor", "#F5F7FB",
-        "--theme.secondaryBackgroundColor", "#E8EDF5",
-        "--theme.textColor", "#13203A",
+        "--theme.backgroundColor", "#F7F8FA",
+        "--theme.secondaryBackgroundColor", "#F2F3F5",
+        "--theme.textColor", "#1F2329",
     ]
     sys.exit(stcli.main())
 
